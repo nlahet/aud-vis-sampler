@@ -1,0 +1,46 @@
+<body></body>
+<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library@1.0.1/build/nn.min.js"></script>
+<script>
+  const url = 'https://storage.googleapis.com/cdn.patatap.com/A/'
+  
+  nn.create('p')
+    .content('press the "q", "w" and "e" keys to make sound')
+    .addTo('body')
+  
+  const svg = nn.create('svg').addTo('body')
+
+  const sounds = {
+    q: nn.create('audio').set('src', url+'clay.mp3').set('preload', 'auto'),
+    w: nn.create('audio').set('src', url+'flash-1.mp3').set('preload', 'auto'),
+    e: nn.create('audio').set('src', url+'moon.mp3').set('preload', 'auto')
+  }  
+
+  function playSound (e) {
+    if (e.repeat) return //doesn't play if holding key
+    const snd = sounds[e.key] //looks up key in array
+    if (!snd) return //doesn't play if key doesn't exist in array
+    snd.currentTime = 0 
+    snd.play()
+    
+    const x = nn.random(nn.width)
+    const y = nn.random(nn.height)
+    const r = 50
+    const circ = svg.circle(x, y, r).fill('blue')
+    
+    const timing = {
+      duration: 600, 
+    }
+    
+    const keyframes = [
+      { r: r, opacity: 0 },
+      { r: r, opacity: 1 },
+      { r: r, opacity: 1 }
+    ]
+    
+    const anim = circ.animate(keyframes, timing)
+    
+    anim.onfinish = () => circ.remove()
+  }
+  
+  nn.on('keydown', playSound)
+</script>
